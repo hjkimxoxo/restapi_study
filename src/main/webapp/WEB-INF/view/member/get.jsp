@@ -1,0 +1,70 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원정보</title>
+<script src="http://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript">
+$(function(){
+	   var contextPath = "<%=request.getContextPath()%>";
+	   var id = ${param.id};
+	   
+	   $.get(contextPath+"/api/members/"+id,
+	      function(json){
+	         var sCont = "";
+	         sCont += "<tr>";
+	         sCont += "<td id='id'>" +json.id+ "</td>";
+	         sCont += "<td>" +json.name + "</td>";
+	         sCont += "<td>" +json.email + "</td>";
+	         sCont += "<td>" +json.registerDateTime + "</td>";
+	         sCont += "</tr>";
+	         
+	         $("#load:last-child").append(sCont);
+	    });         
+
+	   $('#remove').on("click", function(){
+		   var data = {id : $('#id').text()};
+		   alert("data > " + data.id + " : " + $('#id').text());
+		   $.ajax({
+		   		url: contextPath+"/api/members/"+data.id,
+		   		type: 'DELETE',
+		   		success: function(res) {
+		   		alert(res);
+		   		window.location.href = contextPath+"/memberlist";
+		   	},
+		  		error:function(request,status,error){
+		  		alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+		   		window.location.href = contextPath+"/memberlist";
+		   	}
+		 }); 
+	 });
+	
+	
+ $('#list').on("click", function(){
+	 window.location.href=contextPath+"/memberlist";
+  });
+ 
+ $('#modify').on("click", function(){
+	 window.location.href=contextPath+"/update?id="+${param.id};
+  });
+	
+});
+</script>
+</head>
+<body>
+	
+	<table border="1">
+<thead><th>아이디</th><th>이메일</th><th>이름</th><th>가입일</th></thead>
+<tbody id="load"></tbody>
+</table>
+
+	
+	<button id="remove">삭제</button>
+	<button id="modify">수정</button>
+	<button id="list">목록</button>
+</body>
+</html>
